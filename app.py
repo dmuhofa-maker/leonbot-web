@@ -1,0 +1,66 @@
+import os
+import streamlit as st
+from dotenv import load_dotenv
+from groq import Groq
+
+# Load your GROQ_API_KEY from the existing .env file
+load_dotenv()
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+
+# Configure the browser tab title and layout
+st.set_page_config(page_title="LeonBot AI", page_icon="🤖", layout="centered")
+
+# Left sidebar (just like ChatGPT)
+with st.sidebar:
+    st.title("🤖 LeonBot AI")
+    st.caption("Created by Lennon")
+    if st.button("➕ New Chat", use_container_width=True):
+        st.session_state.messages = [
+            {
+                "role": "system",
+                "content": (
+                    "You are LeonBot, a friendly, street-smart tech assistant created by Lennon. "
+                    "Always speak simply, keep answers clear and smooth, and greet Lennon warmly."
+                )
+            }
+        ]
+        st.rerun()
+
+st.title("What can I help with, Lennon?")
+
+# Initialize conversation memory
+if "messages" not in st.session_state:
+    st.session_state.messages = [
+        {
+            "role": "system",
+            "content": (
+                "You are LeonBot, a friendly, street-smart tech assistant created by Lennon. "
+                "Always speak simply, keep answers clear and smooth, and greet Lennon warmly."
+            )
+        }
+    ]
+
+# Display all past chat bubbles
+for msg in st.session_state.messages:
+    if msg["role"] != "system":
+        with st.chat_message(msg["role"]):
+            st.markdown(msg["content"])
+
+# ChatGPT-style input box at the bottom of the screen
+if prompt := st.chat_input("Message LeonBot..."):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    with st.chat_message("assistant"):
+        with st.spinner("Thinking..."):
+            try:
+                response = client.chat.completions.create(
+                    model="openai/gpt-oss-120b",
+                    messages=st.session_state.messages  # type: ignore
+                )
+                reply = response.choices[0].message.content
+                st.markdown(reply)
+                st.session_state.messages.append({"role": "assistant", "content": reply})
+            except Exception as e:
+                st.error(f"Error: {e}")
