@@ -53,7 +53,7 @@ if prompt := st.chat_input("Message LeonBot..."):
                     model="openai/gpt-oss-120b",
                     messages=st.session_state.messages  # type: ignore
                 )
-                reply = response.choices.message.content
+                reply = response.choices[0].message.content
                 st.markdown(reply)
                 st.session_state.messages.append({"role": "assistant", "content": reply})
             except Exception as e:
