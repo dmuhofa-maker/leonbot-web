@@ -12,29 +12,7 @@ load_dotenv()
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 # Configure the browser tab title and layout
-LOGO_URL = "https://www.pinterest.com/pin/744782857176626869/"
-st.set_page_config(page_title="LeonBot AI", page_icon=LOGO_URL, layout="centered")
-
-
-# Custom Background Picture (Replace this URL with any direct image link if you want!)
-BACKGROUND_IMAGE_URL = "https://unsplash.com/photos/glass-skyscrapers-in-thick-fog-GMryDEOKFpE"
-
-st.markdown(
-    f"""
-    <style>
-    .stApp, [data-testid="stAppViewContainer"], [data-testid="stMain"] {{
-        background-image: linear-gradient(rgba(14, 17, 23, 0.72), rgba(14, 17, 23, 0.82)), url("{BACKGROUND_IMAGE_URL}") !important;
-        background-size: cover !important;
-        background-position: center !important;
-        background-attachment: fixed !important;
-    }}
-    [data-testid="stHeader"], [data-testid="stBottom"], [data-testid="stBottom"] > div {{
-        background: transparent !important;
-    }}
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+st.set_page_config(page_title="LeonBot AI", page_icon="🤖", layout="centered")
 
 PERSONALITIES = {
     "😎 Friendly & Street-Smart": (
@@ -119,8 +97,7 @@ if "messages" not in st.session_state:
 
 # Left sidebar
 with st.sidebar:
-    st.image(LOGO_URL, width=85)
-    st.title("LeonBot AI")
+    st.title("🤖 LeonBot AI")
     st.caption("Created by Lennon")
 
     # Personality Switcher Dropdown
