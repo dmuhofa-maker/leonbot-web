@@ -14,11 +14,30 @@ client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 # Configure the browser tab title and layout
 st.set_page_config(page_title="LeonBot AI", page_icon="🤖", layout="centered")
 
-def get_system_prompt(notes_text=""):
+PERSONALITIES = {
+    "😎 Friendly & Street-Smart": (
+        "You are LeonBot, a friendly, street-smart tech assistant and Study Tutor created by Lennon. "
+        "Always speak simply, keep answers clear and smooth, and greet every user warmly."
+    ),
+    "😂 Funny & Sarcastic": (
+        "You are LeonBot, a hilarious, witty, and slightly sarcastic AI assistant created by Lennon. "
+        "Crack clever jokes, keep things entertaining, and playfully tease users while still giving accurate answers."
+    ),
+    "🎓 Strict Professor": (
+        "You are Professor LeonBot, a serious, disciplined, and thorough academic tutor created by Lennon. "
+        "Explain concepts clearly step-by-step, challenge the user to think critically, and maintain a scholarly tone."
+    ),
+    "🎮 Hype Gamer & Tech Bro": (
+        "You are LeonBot, an energetic pro-gamer and tech geek assistant created by Lennon. "
+        "Talk like a hype gaming teammate, use casual gaming/tech energy, and keep answers fast and sharp."
+    )
+}
+
+def get_system_prompt(personality_name, notes_text=""):
     today = datetime.now().strftime("%B %d, %Y")
+    personality_desc = PERSONALITIES.get(personality_name, PERSONALITIES["😎 Friendly & Street-Smart"])
     base_prompt = (
-        f"You are LeonBot, a friendly, street-smart tech assistant and Study Tutor created by Lennon. Today's date is {today}. "
-        "Always speak simply, keep answers clear and smooth, and greet every user warmly. "
+        f"{personality_desc} Today's date is {today}. "
         "If anyone asks who created or built you, proudly introduce Lennon as your creator. "
         "You have access to a `search_web` tool. Use it automatically whenever a user asks about current news, "
         "live sports scores, recent events, weather, prices, or facts you are unsure about."
@@ -69,18 +88,32 @@ def extract_text_from_file(uploaded_file):
         return uploaded_file.read().decode("utf-8", errors="ignore")
 
 # Initialize session variables
+if "personality" not in st.session_state:
+    st.session_state.personality = "😎 Friendly & Street-Smart"
 if "notes_text" not in st.session_state:
     st.session_state.notes_text = ""
 if "messages" not in st.session_state:
-    st.session_state.messages = [get_system_prompt()]
+    st.session_state.messages = [get_system_prompt(st.session_state.personality)]
 
 # Left sidebar
 with st.sidebar:
     st.title("🤖 LeonBot AI")
     st.caption("Created by Lennon")
 
+    # Personality Switcher Dropdown
+    selected_personality = st.selectbox(
+        "🎭 Choose Personality:",
+        list(PERSONALITIES.keys()),
+        index=list(PERSONALITIES.keys()).index(st.session_state.personality)
+    )
+
+    if selected_personality != st.session_state.personality:
+        st.session_state.personality = selected_personality
+        st.session_state.messages[0] = get_system_prompt(selected_personality, st.session_state.notes_text)
+        st.rerun()
+
     if st.button("➕ New Chat", use_container_width=True):
-        st.session_state.messages = [get_system_prompt(st.session_state.notes_text)]
+        st.session_state.messages = [get_system_prompt(st.session_state.personality, st.session_state.notes_text)]
         st.rerun()
 
     st.divider()
@@ -91,7 +124,7 @@ with st.sidebar:
         extracted = extract_text_from_file(uploaded_file)
         if extracted != st.session_state.notes_text:
             st.session_state.notes_text = extracted
-            st.session_state.messages = [get_system_prompt(extracted)]
+            st.session_state.messages = [get_system_prompt(st.session_state.personality, extracted)]
             st.success(f"Loaded: {uploaded_file.name}")
 
     quiz_clicked = False
@@ -100,7 +133,7 @@ with st.sidebar:
             quiz_clicked = True
 
 st.title("What can I help you with?")
-st.caption("LeonBot AI — Your free AI assistant, Study Tutor & live web search tool created by Lennon.")
+st.caption(f"Mode: **{st.session_state.personality}** • Created by Lennon")
 
 # Display all past chat bubbles
 for msg in st.session_state.messages:
@@ -146,7 +179,7 @@ if user_prompt:
                             "content": (
                                 f"{user_prompt}\n\n"
                                 f"Here are live search results from the internet right now:\n{combined_results}\n\n"
-                                "Answer clearly using these live search results and include helpful source links."
+                                "Answer clearly in your chosen personality using these live search results and include helpful source links."
                             )
                         }
                     ]
