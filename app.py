@@ -15,7 +15,7 @@ client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 st.set_page_config(page_title="LeonBot AI", page_icon="🤖", layout="centered")
 
 # Custom Background Picture (Replace this URL with any direct image link if you want!)
-BACKGROUND_IMAGE_URL = "https://unsplash.com/photos/floating-cubes-and-glowing-yellow-spheres-d2w-_1LJioQ"
+BACKGROUND_IMAGE_URL = "https://unsplash.com/photos/glass-skyscrapers-in-thick-fog-GMryDEOKFpE"
 
 st.markdown(
     f"""
