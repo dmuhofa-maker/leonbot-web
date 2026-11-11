@@ -4,3 +4,4 @@ python-dotenv
 ddgs
 streamlit
 pypdf
+gTTS
