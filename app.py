@@ -13,6 +13,25 @@ client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 # Configure the browser tab title and layout
 st.set_page_config(page_title="LeonBot AI", page_icon="🤖", layout="centered")
+BACKGROUND_IMAGE_URL = "https://unsplash.com/photos/floating-cubes-and-glowing-yellow-spheres-d2w-_1LJioQ?utm_source=unsplash&utm_medium=referral&utm_content=creditShareLink"
+
+st.markdown(
+    f"""
+    <style>
+    .stApp {{
+        background-image: linear-gradient(rgba(14, 17, 23, 0.78), rgba(14, 17, 23, 0.85)), url("{BACKGROUND_IMAGE_URL}");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }}
+    [data-testid="stHeader"], [data-testid="stBottom"] {{
+        background: transparent;
+    }}
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 
 PERSONALITIES = {
     "😎 Friendly & Street-Smart": (
