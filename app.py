@@ -131,24 +131,29 @@ if user_prompt:
 
                 # Check if LeonBot decided to search the live internet
                 if response_message.tool_calls:
-                    st.session_state.messages.append(response_message)
-
+                    search_snippets = []
                     for tool_call in response_message.tool_calls:
                         args = json.loads(tool_call.function.arguments)
                         query = args.get("query", user_prompt)
                         with st.spinner(f"🔍 Searching the web for: {query}..."):
                             web_data = search_web(query)
+                            search_snippets.append(web_data)
 
-                        st.session_state.messages.append({
-                            "role": "tool",
-                            "tool_call_id": tool_call.id,
-                            "name": "search_web",
-                            "content": web_data
-                        })
+                    combined_results = "\n\n---\n\n".join(search_snippets)
+                    temp_messages = st.session_state.messages[:-1] + [
+                        {
+                            "role": "user",
+                            "content": (
+                                f"{user_prompt}\n\n"
+                                f"Here are live search results from the internet right now:\n{combined_results}\n\n"
+                                "Answer clearly using these live search results and include helpful source links."
+                            )
+                        }
+                    ]
 
                     final_response = client.chat.completions.create(
                         model="openai/gpt-oss-120b",
-                        messages=st.session_state.messages  # type: ignore
+                        messages=temp_messages  # type: ignore
                     )
                     reply = final_response.choices[0].message.content
                 else:
