@@ -3,4 +3,4 @@ groq
 python-dotenv
 ddgs
 streamlit
-
+pypdf
