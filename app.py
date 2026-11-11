@@ -150,7 +150,7 @@ if user_prompt:
                         model="openai/gpt-oss-120b",
                         messages=st.session_state.messages  # type: ignore
                     )
-                   reply = final_response.choices[0].message.content
+                    reply = final_response.choices[0].message.content
                 else:
                     reply = response_message.content
 
